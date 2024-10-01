@@ -11,5 +11,7 @@ class NoiseGeneratorParameters with _$NoiseGeneratorParameters {
     required double highPassCutoff,
     required double smoothingFactor,
     required double soundFrequencyLevel,
+    required double attackTime,
+    required double releaseTime,
   }) = _NoiseGeneratorParameters;
 }

@@ -22,6 +22,8 @@ mixin _$NoiseGeneratorParameters {
   double get highPassCutoff => throw _privateConstructorUsedError;
   double get smoothingFactor => throw _privateConstructorUsedError;
   double get soundFrequencyLevel => throw _privateConstructorUsedError;
+  double get attackTime => throw _privateConstructorUsedError;
+  double get releaseTime => throw _privateConstructorUsedError;
 
   /// Create a copy of NoiseGeneratorParameters
   /// with the given fields replaced by the non-null parameter values.
@@ -42,7 +44,9 @@ abstract class $NoiseGeneratorParametersCopyWith<$Res> {
       double lowPassCutoff,
       double highPassCutoff,
       double smoothingFactor,
-      double soundFrequencyLevel});
+      double soundFrequencyLevel,
+      double attackTime,
+      double releaseTime});
 }
 
 /// @nodoc
@@ -67,6 +71,8 @@ class _$NoiseGeneratorParametersCopyWithImpl<$Res,
     Object? highPassCutoff = null,
     Object? smoothingFactor = null,
     Object? soundFrequencyLevel = null,
+    Object? attackTime = null,
+    Object? releaseTime = null,
   }) {
     return _then(_value.copyWith(
       frequency: null == frequency
@@ -93,6 +99,14 @@ class _$NoiseGeneratorParametersCopyWithImpl<$Res,
           ? _value.soundFrequencyLevel
           : soundFrequencyLevel // ignore: cast_nullable_to_non_nullable
               as double,
+      attackTime: null == attackTime
+          ? _value.attackTime
+          : attackTime // ignore: cast_nullable_to_non_nullable
+              as double,
+      releaseTime: null == releaseTime
+          ? _value.releaseTime
+          : releaseTime // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -112,7 +126,9 @@ abstract class _$$NoiseGeneratorParametersImplCopyWith<$Res>
       double lowPassCutoff,
       double highPassCutoff,
       double smoothingFactor,
-      double soundFrequencyLevel});
+      double soundFrequencyLevel,
+      double attackTime,
+      double releaseTime});
 }
 
 /// @nodoc
@@ -136,6 +152,8 @@ class __$$NoiseGeneratorParametersImplCopyWithImpl<$Res>
     Object? highPassCutoff = null,
     Object? smoothingFactor = null,
     Object? soundFrequencyLevel = null,
+    Object? attackTime = null,
+    Object? releaseTime = null,
   }) {
     return _then(_$NoiseGeneratorParametersImpl(
       frequency: null == frequency
@@ -162,6 +180,14 @@ class __$$NoiseGeneratorParametersImplCopyWithImpl<$Res>
           ? _value.soundFrequencyLevel
           : soundFrequencyLevel // ignore: cast_nullable_to_non_nullable
               as double,
+      attackTime: null == attackTime
+          ? _value.attackTime
+          : attackTime // ignore: cast_nullable_to_non_nullable
+              as double,
+      releaseTime: null == releaseTime
+          ? _value.releaseTime
+          : releaseTime // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -175,7 +201,9 @@ class _$NoiseGeneratorParametersImpl implements _NoiseGeneratorParameters {
       required this.lowPassCutoff,
       required this.highPassCutoff,
       required this.smoothingFactor,
-      required this.soundFrequencyLevel});
+      required this.soundFrequencyLevel,
+      required this.attackTime,
+      required this.releaseTime});
 
   @override
   final double frequency;
@@ -189,10 +217,14 @@ class _$NoiseGeneratorParametersImpl implements _NoiseGeneratorParameters {
   final double smoothingFactor;
   @override
   final double soundFrequencyLevel;
+  @override
+  final double attackTime;
+  @override
+  final double releaseTime;
 
   @override
   String toString() {
-    return 'NoiseGeneratorParameters(frequency: $frequency, amplitude: $amplitude, lowPassCutoff: $lowPassCutoff, highPassCutoff: $highPassCutoff, smoothingFactor: $smoothingFactor, soundFrequencyLevel: $soundFrequencyLevel)';
+    return 'NoiseGeneratorParameters(frequency: $frequency, amplitude: $amplitude, lowPassCutoff: $lowPassCutoff, highPassCutoff: $highPassCutoff, smoothingFactor: $smoothingFactor, soundFrequencyLevel: $soundFrequencyLevel, attackTime: $attackTime, releaseTime: $releaseTime)';
   }
 
   @override
@@ -211,12 +243,24 @@ class _$NoiseGeneratorParametersImpl implements _NoiseGeneratorParameters {
             (identical(other.smoothingFactor, smoothingFactor) ||
                 other.smoothingFactor == smoothingFactor) &&
             (identical(other.soundFrequencyLevel, soundFrequencyLevel) ||
-                other.soundFrequencyLevel == soundFrequencyLevel));
+                other.soundFrequencyLevel == soundFrequencyLevel) &&
+            (identical(other.attackTime, attackTime) ||
+                other.attackTime == attackTime) &&
+            (identical(other.releaseTime, releaseTime) ||
+                other.releaseTime == releaseTime));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, frequency, amplitude,
-      lowPassCutoff, highPassCutoff, smoothingFactor, soundFrequencyLevel);
+  int get hashCode => Object.hash(
+      runtimeType,
+      frequency,
+      amplitude,
+      lowPassCutoff,
+      highPassCutoff,
+      smoothingFactor,
+      soundFrequencyLevel,
+      attackTime,
+      releaseTime);
 
   /// Create a copy of NoiseGeneratorParameters
   /// with the given fields replaced by the non-null parameter values.
@@ -230,13 +274,14 @@ class _$NoiseGeneratorParametersImpl implements _NoiseGeneratorParameters {
 
 abstract class _NoiseGeneratorParameters implements NoiseGeneratorParameters {
   const factory _NoiseGeneratorParameters(
-          {required final double frequency,
-          required final double amplitude,
-          required final double lowPassCutoff,
-          required final double highPassCutoff,
-          required final double smoothingFactor,
-          required final double soundFrequencyLevel}) =
-      _$NoiseGeneratorParametersImpl;
+      {required final double frequency,
+      required final double amplitude,
+      required final double lowPassCutoff,
+      required final double highPassCutoff,
+      required final double smoothingFactor,
+      required final double soundFrequencyLevel,
+      required final double attackTime,
+      required final double releaseTime}) = _$NoiseGeneratorParametersImpl;
 
   @override
   double get frequency;
@@ -250,6 +295,10 @@ abstract class _NoiseGeneratorParameters implements NoiseGeneratorParameters {
   double get smoothingFactor;
   @override
   double get soundFrequencyLevel;
+  @override
+  double get attackTime;
+  @override
+  double get releaseTime;
 
   /// Create a copy of NoiseGeneratorParameters
   /// with the given fields replaced by the non-null parameter values.

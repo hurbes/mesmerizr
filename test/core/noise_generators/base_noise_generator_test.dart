@@ -12,6 +12,8 @@ class MockNoiseGenerator extends BaseNoiseGenerator {
     highPassCutoff: 20.0,
     smoothingFactor: 0.0,
     soundFrequencyLevel: 1.0,
+    attackTime: 0.01,
+    releaseTime: 0.01,
   );
 
   @override
@@ -81,6 +83,8 @@ void main() {
         highPassCutoff: 50.0,
         smoothingFactor: 0.5,
         soundFrequencyLevel: 0.8,
+        attackTime: 0.01,
+        releaseTime: 0.01,
       );
       mockGenerator.updateParameters(newParameters);
       expect(mockGenerator.parameters, equals(newParameters));

@@ -1,16 +1,18 @@
 import 'dart:typed_data';
+import '../interfaces/audio_processor.dart';
 import '../parameters/noise_generator_parameters.dart';
 import '../isolates/noise_isolate_processor.dart';
 import 'audio_format_converter.dart';
 import 'audio_effects/audio_effect.dart';
 
-class AudioProcessor {
+class AudioProcessor implements IAudioProcessor {
   final NoiseIsolateProcessor _noiseProcessor;
   double _volume = 1.0;
   final List<AudioEffect> _effects = [];
 
   AudioProcessor(this._noiseProcessor);
 
+  @override
   Future<Uint8List> processAudio(NoiseGeneratorParameters parameters,
       int sampleRate, int bufferSize) async {
     Uint8List rawNoise =
@@ -23,20 +25,24 @@ class AudioProcessor {
     return AudioFormatConverter.float64ToUint8(floatSamples);
   }
 
+  @override
   void setVolume(double volume) {
     _volume = volume.clamp(0.0, 1.0);
   }
 
   double get volume => _volume;
 
+  @override
   void addEffect(AudioEffect effect) {
     _effects.add(effect);
   }
 
+  @override
   void removeEffect(AudioEffect effect) {
     _effects.remove(effect);
   }
 
+  @override
   void clearEffects() {
     _effects.clear();
   }
@@ -54,9 +60,7 @@ class AudioProcessor {
     return result;
   }
 
-  // Expose effects list for testing
   List<AudioEffect> get effects => List.unmodifiable(_effects);
 
-  // Expose applyVolume method for testing
   Float64List applyVolume(Float64List input) => _applyVolume(input);
 }

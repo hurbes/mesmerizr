@@ -13,7 +13,10 @@ class DelayEffect extends AudioEffect {
   String get name => 'Delay';
 
   @override
-  Float64List apply(Float64List input, int sampleRate) {
+  Float64List apply(Float64List input, [int? sampleRate]) {
+    if (sampleRate == null) {
+      throw ArgumentError('sampleRate must not be null');
+    }
     final delaySamples = (_delayTime * sampleRate).round();
     final output = Float64List(input.length);
 

@@ -1,66 +1,110 @@
+import 'dart:async';
 import 'dart:typed_data';
-import '../interfaces/audio_processor.dart';
-import '../parameters/noise_generator_parameters.dart';
-import '../isolates/noise_isolate_processor.dart';
-import 'audio_format_converter.dart';
-import 'audio_effects/audio_effect.dart';
+import 'package:mesmerizr/core/noise_processor/noise_processor.dart';
+import 'package:mesmerizr/core/parameters/noise_generator_parameters.dart';
+import 'package:mesmerizr/core/audio_processor/audio_effects/audio_effect.dart';
 
-class AudioProcessor implements IAudioProcessor {
-  final NoiseIsolateProcessor _noiseProcessor;
+class AudioProcessor {
+  final NoiseProcessor _noiseProcessor;
+  final StreamController<Uint8List> _processedAudioController =
+      StreamController<Uint8List>.broadcast();
+
   double _volume = 1.0;
-  final List<AudioEffect> _effects = [];
+  bool _isPlaying = false;
+  double _pan = 0.0; // -1.0 (left) to 1.0 (right)
+  List<AudioEffect> _effects = [];
 
   AudioProcessor(this._noiseProcessor);
 
-  @override
-  Future<Uint8List> processAudio(NoiseGeneratorParameters parameters,
-      int sampleRate, int bufferSize) async {
-    Uint8List rawNoise =
-        await _noiseProcessor.generateNoise(parameters, sampleRate, bufferSize);
-    Float64List floatSamples = AudioFormatConverter.uint8ToFloat64(rawNoise);
+  Stream<Uint8List> get processedAudioStream =>
+      _processedAudioController.stream;
 
-    floatSamples = _applyVolume(floatSamples);
-    floatSamples = _applyEffects(floatSamples, sampleRate);
-
-    return AudioFormatConverter.float64ToUint8(floatSamples);
+  Future<void> initialize() async {
+    await _noiseProcessor.initialize();
+    _noiseProcessor.noiseStream.listen(_processAudio);
   }
 
-  @override
+  void _processAudio(Uint8List rawAudio) {
+    Float64List floatData = Float64List.view(rawAudio.buffer);
+    floatData = _applyVolume(floatData);
+    floatData = _applyPan(floatData);
+    floatData = _applyEffects(floatData);
+    _processedAudioController.add(floatData.buffer.asUint8List());
+  }
+
+  Float64List _applyVolume(Float64List audio) {
+    if (_volume == 1.0) return audio;
+    return Float64List.fromList(
+        audio.map((sample) => sample * _volume).toList());
+  }
+
+  Float64List _applyPan(Float64List audio) {
+    if (_pan == 0.0) return audio;
+    final leftGain = 1.0 - _pan.clamp(-1.0, 1.0);
+    final rightGain = 1.0 + _pan.clamp(-1.0, 1.0);
+    for (int i = 0; i < audio.length; i += 2) {
+      audio[i] *= leftGain;
+      if (i + 1 < audio.length) {
+        audio[i + 1] *= rightGain;
+      }
+    }
+    return audio;
+  }
+
+  Float64List _applyEffects(Float64List audio) {
+    for (var effect in _effects) {
+      audio = effect.apply(audio);
+    }
+    return audio;
+  }
+
+  Future<void> play() async {
+    if (!_isPlaying) {
+      await _noiseProcessor.startGeneratingNoise();
+      _isPlaying = true;
+    }
+  }
+
+  Future<void> stop() async {
+    if (_isPlaying) {
+      await _noiseProcessor.stopGeneratingNoise();
+      _isPlaying = false;
+    }
+  }
+
   void setVolume(double volume) {
     _volume = volume.clamp(0.0, 1.0);
   }
 
-  double get volume => _volume;
+  void setPan(double pan) {
+    _pan = pan.clamp(-1.0, 1.0);
+  }
 
-  @override
   void addEffect(AudioEffect effect) {
     _effects.add(effect);
   }
 
-  @override
   void removeEffect(AudioEffect effect) {
     _effects.remove(effect);
   }
 
-  @override
   void clearEffects() {
     _effects.clear();
   }
 
-  Float64List _applyVolume(Float64List input) {
-    return Float64List.fromList(
-        input.map((sample) => sample * _volume).toList());
+  Future<void> updateNoiseParameters(
+      NoiseGeneratorParameters parameters) async {
+    await _noiseProcessor.updateNoiseParameters(parameters);
   }
 
-  Float64List _applyEffects(Float64List input, int sampleRate) {
-    Float64List result = input;
-    for (var effect in _effects) {
-      result = effect.apply(result, sampleRate);
-    }
-    return result;
+  Future<void> dispose() async {
+    await stop();
+    await _processedAudioController.close();
+    await _noiseProcessor.dispose();
   }
 
+  bool get isPlaying => _isPlaying;
+  double get volume => _volume;
+  double get pan => _pan;
   List<AudioEffect> get effects => List.unmodifiable(_effects);
-
-  Float64List applyVolume(Float64List input) => _applyVolume(input);
 }
